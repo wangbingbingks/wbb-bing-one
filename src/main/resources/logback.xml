@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- <Pattern>.%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n
+            </Pattern>
+            -->
+            <Pattern>%d{HH:mm:ss} %logger{36} - %msg %n
+            </Pattern>
+        </encoder>
+
+    </appender>
+
+
+    <appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<file>/home/user/cf/tomcat_cf/logs/cfAdmin.log</file>-->
+        <file>../logs/cfAdmin.log</file>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%class:%line] - %m%n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/home/user/cf/tomcat_cf/logs/cfAdmin.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <root>
+        <level value="info"/>
+        <appender-ref ref="consoleAppender"/>
+    </root>
+
+    <logger name="com.corsface" level="DEBUG">
+        <appender-ref ref="fileAppender"/>
+        <!--<appender-ref ref="consoleAppender"/>-->
+    </logger>
+
+    <logger name="com.product" level="DEBUG">
+        <appender-ref ref="fileAppender"/>
+        <!--<appender-ref ref="consoleAppender"/>-->
+    </logger>
+
+    <logger name="org.apache.shiro" level="ALL"/>
+
+</configuration>

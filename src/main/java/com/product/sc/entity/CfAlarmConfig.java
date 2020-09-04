@@ -1,11 +1,15 @@
 package com.product.sc.entity;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Created by wbb on 2020/8/13.
+ */
+
 @Entity
-@Table(name = "cf_alarm_config", schema = "cf", catalog = "")
+@Table(name = "cf_alarm_config")
 public class CfAlarmConfig {
     private Long id;
     private String name;
@@ -13,11 +17,12 @@ public class CfAlarmConfig {
     private Long poigroupId;
     private Integer alarmType;
     private String memo;
-    private Timestamp gmtCreate;
-    private Timestamp gmtModified;
+    private Date gmtCreate;
+    private Date gmtModified;
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -78,21 +83,21 @@ public class CfAlarmConfig {
 
     @Basic
     @Column(name = "gmt_create")
-    public Timestamp getGmtCreate() {
+    public Date getGmtCreate() {
         return gmtCreate;
     }
 
-    public void setGmtCreate(Timestamp gmtCreate) {
+    public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
     }
 
     @Basic
     @Column(name = "gmt_modified")
-    public Timestamp getGmtModified() {
+    public Date getGmtModified() {
         return gmtModified;
     }
 
-    public void setGmtModified(Timestamp gmtModified) {
+    public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;
     }
 

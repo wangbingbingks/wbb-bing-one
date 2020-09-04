@@ -1,11 +1,13 @@
 package com.corsface.base.entity;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
-
+/**
+ * Created by wbb on 2020/8/13.
+ */
 @Entity
-@Table(name = "be_user", schema = "cf", catalog = "")
+@Table(name = "be_user")
 public class BeUser {
     private Long id;
     private String name;
@@ -13,14 +15,15 @@ public class BeUser {
     private String password;
     private String salt;
     private Integer serviceFlag;
-    private Timestamp lastLogin;
+    private Date lastLogin;
     private String token;
-    private Timestamp tokenExpire;
-    private Timestamp gmtCreate;
-    private Timestamp gmtModified;
+    private Date tokenExpire;
+    private Date gmtCreate;
+    private Date gmtModified;
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -81,11 +84,11 @@ public class BeUser {
 
     @Basic
     @Column(name = "last_login")
-    public Timestamp getLastLogin() {
+    public Date getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(Timestamp lastLogin) {
+    public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
     }
 
@@ -101,31 +104,31 @@ public class BeUser {
 
     @Basic
     @Column(name = "token_expire")
-    public Timestamp getTokenExpire() {
+    public Date getTokenExpire() {
         return tokenExpire;
     }
 
-    public void setTokenExpire(Timestamp tokenExpire) {
+    public void setTokenExpire(Date tokenExpire) {
         this.tokenExpire = tokenExpire;
     }
 
     @Basic
     @Column(name = "gmt_create")
-    public Timestamp getGmtCreate() {
+    public Date getGmtCreate() {
         return gmtCreate;
     }
 
-    public void setGmtCreate(Timestamp gmtCreate) {
+    public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
     }
 
     @Basic
     @Column(name = "gmt_modified")
-    public Timestamp getGmtModified() {
+    public Date getGmtModified() {
         return gmtModified;
     }
 
-    public void setGmtModified(Timestamp gmtModified) {
+    public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;
     }
 

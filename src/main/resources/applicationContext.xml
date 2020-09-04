@@ -16,16 +16,17 @@
         http://www.springframework.org/schema/task
         http://www.springframework.org/schema/task/spring-task.xsd">
 
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="fileEncoding" value="utf-8"/>
+        <property name="locations">
+            <list>
+                <value>classpath:cf.properties</value>
+            </list>
+        </property>
+    </bean>
 
     <context:component-scan base-package="com.corsface"/>
     <context:component-scan base-package="com.product"/>
-
-    <bean
-            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/jsp/"/>
-        <property name="suffix" value=".jsp"/>
-    </bean>
 
     <mvc:cors>
         <mvc:mapping path="/**"
@@ -37,11 +38,9 @@
                      exposed-headers="Set-Cookie"
         />
     </mvc:cors>
-    <mvc:resources location="/resources/" mapping="/resources/**"/>
-
-
+    <mvc:resources mapping="/cf/**" location="/cf/" />
     <mvc:annotation-driven>
-        <mvc:message-converters register-defaults="true">
+        <mvc:message-converters register-defaults="false">
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="supportedMediaTypes">
                     <list>
@@ -60,4 +59,106 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
+
+    <!-- for servlet 3.0 /tomcat 7 -->
+    <!-- web基于Servlet3.0来处理multipart请求，不需要引用其他jar包，但是必须使用支持Servlet3.0的容器才可以。从Tomcat 7.0.x的版本开始就支持Servlet3.0了 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <bean
+            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+            init-method="init" destroy-method="close">
+        <!-- 基本属性 url、user、password -->
+        <property name="url" value="${connection.url}"/>
+        <property name="username" value="${connection.username}"/>
+        <property name="password" value="${connection.password}"/>
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="1"/>
+        <property name="minIdle" value="1"/>
+        <property name="maxActive" value="20"/>
+
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000"/>
+
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="false"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize"
+                  value="20"/>
+
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="stat,slf4j"/>
+    </bean>
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <!-- 定义使用的数据库方言 -->
+                <prop key="hibernate.dialect">
+                    org.hibernate.dialect.MySQLDialect
+                </prop>
+
+                <!-- 在控制台中打印SQL语句 -->
+                <prop key="hibernate.show_sql">
+                    ${hibernate.show_sql}
+                </prop>
+                <!-- 格式化控制台中打印的SQL语句 -->
+                <prop key="hibernate.format_sql">
+                    ${hibernate.format_sql}
+
+                </prop>
+                <!-- Hibernate将在SQL中生成有助于调试的注释信息 -->
+                <prop key="hibernate.use_sql_comments">
+                    ${hibernate.use_sql_comments}
+                </prop>
+                <!-- 可以自动创建数据库表(create),不创建(none) -->
+                <prop key="hibernate.hbm2ddl.auto">none</prop>
+                <prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/cf?serverTimezone=GMT</prop>
+                <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
+            </props>
+        </property>
+        <!-- 包扫描的方式加载注解类(推荐) -->
+        <property name="packagesToScan">
+            <list>
+                <value>com.corsface.base.entity</value>
+                <value>com.product.sc.entity</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 开启事务管理，使用Spring管理Hibernate事物 -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 用注解来实现事务管理 -->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+    <!-- 配置任务扫描 -->
+    <task:annotation-driven/>
+
+    <!-- redis 配置 -->
+    <import resource="redis.xml"/>
+
+    <!-- rabbitmq 配置 -->
+    <import resource="rabbitmq.xml"/>
 </beans>

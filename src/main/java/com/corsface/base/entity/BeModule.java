@@ -1,11 +1,13 @@
 package com.corsface.base.entity;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
-
+/**
+ * Created by wbb on 2020/8/13.
+ */
 @Entity
-@Table(name = "be_module", schema = "cf", catalog = "")
+@Table(name = "be_module")
 public class BeModule {
     private Long id;
     private String name;
@@ -14,11 +16,16 @@ public class BeModule {
     private Integer isDisplay;
     private String icon;
     private Integer sortNum;
-    private Timestamp gmtCreate;
-    private Timestamp gmtModified;
+    private Date gmtCreate;
+    private Date gmtModified;
+
+    private String url;
+    private long defaultFId = -1;
+    private int active = 0;  //用来页面显示,当前模块是否选取状态
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -89,21 +96,21 @@ public class BeModule {
 
     @Basic
     @Column(name = "gmt_create")
-    public Timestamp getGmtCreate() {
+    public Date getGmtCreate() {
         return gmtCreate;
     }
 
-    public void setGmtCreate(Timestamp gmtCreate) {
+    public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
     }
 
     @Basic
     @Column(name = "gmt_modified")
-    public Timestamp getGmtModified() {
+    public Date getGmtModified() {
         return gmtModified;
     }
 
-    public void setGmtModified(Timestamp gmtModified) {
+    public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;
     }
 
@@ -126,5 +133,32 @@ public class BeModule {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, parentId, isLeaf, isDisplay, icon, sortNum, gmtCreate, gmtModified);
+    }
+
+    @Transient
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Transient
+    public long getDefaultFId() {
+        return defaultFId;
+    }
+
+    public void setDefaultFId(long defaultFId) {
+        this.defaultFId = defaultFId;
+    }
+
+    @Transient
+    public int getActive() {
+        return active;
+    }
+
+    public void setActive(int active) {
+        this.active = active;
     }
 }
